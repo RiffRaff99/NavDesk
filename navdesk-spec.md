@@ -179,6 +179,8 @@ The router accepts short aliases such as `nav`, `align`, `compass`, `line`, `arr
 - Pointer movement displays a precision cursor and previews the span.
 - Second left click defines leg 2 and fixes the span.
 - The fixed span remains unchanged while the compass is moved or rotated.
+- The closed hinge end has a 1 px chart-space interaction point for precise placement and attachment. Its hit area may be larger for practical pointer use, but the visual point remains 1 px.
+- Compass interaction states are explicitly distinguishable: span setup, fixed span, attached movement, and placed compass.
 - After the span is fixed, left-clicking the compass attaches it to the pointer; another left click places it.
 - While attached inside the chart, right-button drag rotates freely using the pointer displacement angle.
 - While attached outside the chart, the compass automatically uses the nearest chart edge and snaps to a right angle. The closed end points toward the chart, so no outside-chart image area is needed for the working alignment.
@@ -265,10 +267,10 @@ Navdesk remains a simulator for practicing nautical chart-work concepts. It does
 
 ### Release 0.2: Precision and Basic Interaction
 
-#### Branch: `feature/compass-precision`
+#### Branch: `feature/compass-precision` (implemented)
 
 1. **Compass handling**
-	- Add a one-pixel interaction handle at the closed end.
+	- Add a one-pixel visual and precision interaction handle at the closed end.
 	- Improve visual feedback for span definition, attachment, placement, and edge alignment.
 	- Preserve precise pointer-based operation for extracting values from the chart.
 	- Keep the compass span fixed while moving or rotating.
@@ -278,6 +280,11 @@ Suggested commits:
 - `Add compass interaction handle`
 - `Improve compass state feedback`
 - `Document compass precision behavior`
+
+Implemented commits on this branch:
+
+- `0a95e00 Document compass precision milestone`
+- `Add compass precision handle and states`
 
 #### Branch: `feature/pan-zoom-mode`
 

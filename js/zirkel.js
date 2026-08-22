@@ -30,14 +30,23 @@ function createCompass() {
         stroke: '#111827',
         strokeWidth: 1.5,
     });
+    const hingeHandle = new Konva.Circle({
+        x: 0,
+        y: 0,
+        radius: 0.5,
+        fill: '#ef4444',
+        hitStrokeWidth: 14,
+    });
 
-    group.add(leftLeg, rightLeg, hinge);
+    group.add(leftLeg, rightLeg, hinge, hingeHandle);
     group._compass = {
         span: 0,
         phase: 0,
         hanging: false,
+        interactionState: 'spanSetup',
         point1: null,
         point2: null,
+        hingeHandle,
     };
     group.setPoints = (point1, point2) => {
         const dx = point2.x - point1.x;

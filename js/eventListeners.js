@@ -410,6 +410,7 @@ function initEventListeners() {
 
             if (state.hanging && hitTool === compass) {
                 state.hanging = false;
+                state.interactionState = 'placed';
                 appState.activeTool = null;
                 appState.mode = 'PAN_ZOOM';
                 updateStatus('status_ready');
@@ -420,6 +421,7 @@ function initEventListeners() {
                 state.point1 = { ...chartPointer };
                 compass.visible(false);
                 state.phase = 1;
+                state.interactionState = 'spanSetup';
                 updateCompassCursor(pointer, true);
                 updateStatus('status_compassSpan');
                 return;
@@ -432,6 +434,7 @@ function initEventListeners() {
                     compass.setPoints(state.point1, state.point2);
                     compass.visible(true);
                     state.phase = 2;
+                    state.interactionState = 'fixed';
                     appState.mode = 'PAN_ZOOM';
                     updateCompassCursor(pointer, false);
                     updateStatus('status_ready');
@@ -473,6 +476,7 @@ function initEventListeners() {
 
         if (appState.compass && hitTool === appState.compass && isRightClick) {
             appState.compass._compass.hanging = true;
+            appState.compass._compass.interactionState = 'attached';
             appState.activeTool = appState.compass;
             appState.mode = 'COMPASS_ACTIVE';
             rotateStart = {
@@ -487,6 +491,7 @@ function initEventListeners() {
 
         if (appState.mode === 'PAN_ZOOM' && appState.compass && hitTool === appState.compass) {
             appState.compass._compass.hanging = true;
+            appState.compass._compass.interactionState = 'attached';
             appState.activeTool = appState.compass;
             appState.mode = 'COMPASS_ACTIVE';
             updateCompassCursor(pointer, true);
