@@ -351,6 +351,7 @@ Suggested commits:
 Implemented commit on this branch:
 
 - `7554b35 Add JSON overlay import and export`
+- `c0bd511 Restore overlay snap relationships`
 
 ### Release 0.4: OpenSeaMap Experimentation
 
