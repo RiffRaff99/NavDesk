@@ -29,11 +29,14 @@ const appState = {
     parallelAnchorY: 0,
 
     chartImage: null,  // Konva.Image reference for cleanup
+    chartFileName: '',
 };
 
 // ---- Public API (wired after DOMContentLoaded) ----
 const app = {
     importImage: () => {},
+    exportOverlay: () => {},
+    importOverlay: () => {},
     setMode: (modeName) => {},
     reset: () => {},
 };
@@ -90,6 +93,8 @@ function loadImageResult(src) {
         resetToolsOnly();
 
         appState.chartImage = new Konva.Image({ image: img, x: 0, y: 0 });
+        appState.chartFileName = appState.pendingChartFileName || '';
+        appState.pendingChartFileName = '';
         appState.baseLayer.add(appState.chartImage);
 
         // Center viewport on image center
@@ -193,8 +198,21 @@ document.addEventListener('DOMContentLoaded', () => {
         input.addEventListener('change', () => {
             const file = input.files[0];
             if (!file) return;
+            appState.pendingChartFileName = file.name;
             loadChartFile(file);
             input.value = '';
+        });
+    }
+
+    const overlayInput = document.getElementById('btn-overlay-import');
+    if (overlayInput) {
+        overlayInput.addEventListener('change', () => {
+            const file = overlayInput.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = () => app.importOverlay(reader.result);
+            reader.readAsText(file);
+            overlayInput.value = '';
         });
     }
 
@@ -206,6 +224,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (typeof initAppAPI === 'function') {
         const api = initAppAPI(app);
         app.importImage = api.importImage || app.importImage;
+        app.exportOverlay = api.exportOverlay || app.exportOverlay;
+        app.importOverlay = api.importOverlay || app.importOverlay;
         app.setMode = api.setMode || app.setMode;
         app.reset = api.reset || app.reset;
     }
