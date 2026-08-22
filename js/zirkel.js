@@ -100,30 +100,36 @@ function compassPointDistance(first, second) {
     return Math.hypot(second.x - first.x, second.y - first.y);
 }
 
+
 function getCompassEdgeRotation(pointer, chartImage) {
     if (!chartImage) return null;
 
-    const imageWidth = typeof chartImage.width === 'function'
-        ? chartImage.width()
-        : chartImage.image().width;
-    const imageHeight = typeof chartImage.height === 'function'
-        ? chartImage.height()
-        : chartImage.image().height;
+    const imageWidth = typeof chartImage.width === 'function' ? chartImage.width() : chartImage.image().width;
+    const imageHeight = typeof chartImage.height === 'function' ? chartImage.height() : chartImage.image().height;
+    
     const left = chartImage.x();
     const top = chartImage.y();
     const right = left + imageWidth;
     const bottom = top + imageHeight;
 
-    const outsideDistances = [
-        { distance: left - pointer.x, rotation: 270 },
-        { distance: pointer.x - right, rotation: 90 },
-        { distance: top - pointer.y, rotation: 0 },
-        { distance: pointer.y - bottom, rotation: 180 },
-    ].filter((edge) => edge.distance > 0);
+    // Toleranzbereich in Pixeln, ab wann der Zirkel senkrecht/waagerecht einrastet
+    const SNAP_THRESHOLD = 50; 
 
-    if (outsideDistances.length === 0) return null;
+    // Wir berechnen den absoluten Abstand zu jedem Rand
+    const distLeft = Math.abs(pointer.x - left);
+    const distRight = Math.abs(pointer.x - right);
+    const distTop = Math.abs(pointer.y - top);
+    const distBottom = Math.abs(pointer.y - bottom);
 
-    return outsideDistances.reduce((nearest, edge) => (
-        edge.distance < nearest.distance ? edge : nearest
-    )).rotation;
+    // Finde den nächstgelegenen Rand
+    const minDist = Math.min(distLeft, distRight, distTop, distBottom);
+
+    // Wenn der Zeiger nicht nah genug an einem Rand ist, behalte freie Rotation
+    if (minDist > SNAP_THRESHOLD) return null;
+
+    // Rückgabe der passenden Rotation für den nächsten Rand
+    if (minDist === distLeft) return 270;   // Linker Rand (Breitengrad/Seemeilen) -> Vertikal
+    if (minDist === distRight) return 90;    // Rechter Rand (Breitengrad/Seemeilen) -> Vertikal
+    if (minDist === distTop) return 0;       // Oberer Rand (Längengrad) -> Horizontal
+    return 180;                             // Unterer Rand (Längengrad) -> Horizontal
 }

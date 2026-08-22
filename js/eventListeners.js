@@ -772,7 +772,9 @@ function initEventListeners() {
         if (!pointer) return;
 
         if (appState.mode === 'NAV_ACTIVE' && appState.navTriangle) {
-            const delta = event.deltaY > 0 ? -0.5 : 0.5;
+            const nativeEvent = event.evt || event;
+            const step = nativeEvent.shiftKey ? 1.0 : 0.05;
+            const delta = event.deltaY > 0 ? -step : step;
             appState.navTriangle.rotation(appState.navTriangle.rotation() + delta);
             appState.toolLayer.batchDraw();
             return;
