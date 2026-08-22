@@ -17,3 +17,4 @@ This application includes and depends on the following open-source libraries. Th
 *   **[Tailwind CSS](https://tailwindcss.com)** – Developed by Tailwind Labs Inc. Licensed under the [MIT License](https://opensource.org).
 
 All respective copyright notices and license text blocks inside the source files of these libraries have been preserved in accordance with their terms.
+
