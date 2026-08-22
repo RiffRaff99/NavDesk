@@ -286,19 +286,24 @@ Implemented commits on this branch:
 - `0a95e00 Document compass precision milestone`
 - `Add compass precision handle and states`
 
-#### Branch: `feature/pan-zoom-mode`
+#### Branch: `feature/pan-zoom-mode` (implemented)
 
 2. **Dedicated Pan/Zoom mode**
 	- Add a clearly visible default Pan/Zoom toolbar button.
 	- Pressing `Escape` always returns to `PAN_ZOOM`.
 	- Leaving drawing and tool modes must be unambiguous.
 	- Preserve the current chart, tool, and drawing state when only the mode changes.
+	- Switching to `PAN_ZOOM` must not delete or reposition existing tools or drawings.
 
 Suggested commits:
 
 - `Add Pan Zoom toolbar mode`
 - `Return to Pan Zoom on Escape`
 - `Document default navigation mode`
+
+Implemented commit on this branch:
+
+- `4eb9f6f Add dedicated Pan Zoom mode`
 
 #### Branch: `feature/eraser`
 

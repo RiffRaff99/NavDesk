@@ -14,6 +14,12 @@ function initEventListeners() {
     stage.content.style.touchAction = 'none';
     containerEl.style.touchAction = 'none';
 
+    window.addEventListener('keydown', (event) => {
+        if (event.key !== 'Escape') return;
+        event.preventDefault();
+        app.setMode('pan');
+    });
+
     let panning = false;
     let panStartX = 0;
     let panStartY = 0;

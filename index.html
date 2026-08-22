@@ -56,6 +56,10 @@
 
     <!-- Toolbar UI (top overlay) -->
     <div class="toolbar ui-layer">
+        <button class="tool-button" id="btn-pan" onclick="app.setMode('pan')">
+            ✋ <span id="lbl-pan">Pan/Zoom</span>
+        </button>
+
         <!-- Import button with hidden file input supporting PDFs -->
         <label onclick="document.getElementById('btn-import').click()">
             <span id="lbl-import">Karte laden</span>
