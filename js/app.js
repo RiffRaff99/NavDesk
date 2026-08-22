@@ -148,6 +148,7 @@ function updateStatus(statusKey) {
     if (toolbarStatus) toolbarStatus.textContent = text;
 
     const activeButtons = {
+        PAN_ZOOM: 'btn-pan',
         NAV_ACTIVE: 'btn-nav',
         ALIGN_ACTIVE: 'btn-align',
         COMPASS_ACTIVE: 'btn-compass',

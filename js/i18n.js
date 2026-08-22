@@ -8,6 +8,7 @@ const i18n = {
     
     dict: {
         de: {
+            lbl_panZoom: 'Pan/Zoom',
             lbl_import: 'Karte laden',
             lbl_navTriangle: 'Nav-Dreieck',
             lbl_alignTriangle: 'Anlegedreieck',
@@ -38,6 +39,7 @@ const i18n = {
             msg_textPrompt: 'Beschriftung eingeben:',
         },
         en: {
+            lbl_panZoom: 'Pan/Zoom',
             lbl_import: 'Load Chart',
             lbl_navTriangle: 'Nav-Triangle',
             lbl_alignTriangle: 'Align-Triangle',
@@ -77,6 +79,7 @@ const i18n = {
     // Apply language to all UI elements
     apply() {
         const map = {
+            'lbl-pan': 'lbl_panZoom',
             'lbl-import': 'lbl_import',
             'lbl-nav': 'lbl_navTriangle',
             'lbl-align': 'lbl_alignTriangle',

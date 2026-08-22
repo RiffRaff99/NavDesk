@@ -86,6 +86,13 @@ function transition(fromMode, toMode) {
         return target;
     }
 
+    if (target === 'PAN_ZOOM') {
+        appState.activeTool = null;
+        appState.mode = target;
+        if (typeof updateStatus === 'function') updateStatus('status_ready');
+        return target;
+    }
+
     if (appState.stage && !appState.toolLayer) {
         appState.toolLayer = new Konva.Layer();
         appState.stage.add(appState.toolLayer);
