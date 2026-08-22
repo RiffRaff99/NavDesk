@@ -305,7 +305,7 @@ Implemented commit on this branch:
 
 - `4eb9f6f Add dedicated Pan Zoom mode`
 
-#### Branch: `feature/eraser`
+#### Branch: `feature/eraser` (in progress)
 
 3. **Eraser**
 	- Add an eraser mode for drawing objects.
@@ -314,6 +314,7 @@ Implemented commit on this branch:
 	- Support lines, arrows, circles, markers, and labels.
 	- Define deterministic behavior for overlapping objects, preferably nearest visible object first.
 	- Keep NT, AT, and compass deletion protected; these remain removable through Reset only.
+	- Erasing must not change the active navigation mode or viewport transform.
 
 Suggested commits:
 
