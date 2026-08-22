@@ -365,6 +365,15 @@ Implemented commit on this branch:
 
 - `6c61b25 Add movable notes panel`
 
+#### Branch: `feature/overlay-filename` (implemented)
+
+- Overlay export asks for the user-selected JSON filename.
+- The separate exercise-number metadata field was removed; exercise numbers can be written in the notes.
+
+Implemented commit on this branch:
+
+- `ace3665 Use user-selected overlay filename`
+
 ### Release 0.4: OpenSeaMap Experimentation
 
 #### Branch: `feature/openseamap-source`
