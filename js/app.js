@@ -157,6 +157,7 @@ function updateStatus(statusKey) {
         CIRCLE_ACTIVE: 'btn-circle',
         MARKER_ACTIVE: 'btn-marker',
         LABEL_ACTIVE: 'btn-label',
+        ERASER_ACTIVE: 'btn-eraser',
     };
     if (appState.mode === 'PARALLEL' && appState.activeTool) {
         if (appState.activeTool === appState.navTriangle) activeButtons.PARALLEL = 'btn-nav';

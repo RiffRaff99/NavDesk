@@ -116,6 +116,80 @@ function initEventListeners() {
         return true;
     }
 
+    function distanceToSegment(point, start, end) {
+        const dx = end.x - start.x;
+        const dy = end.y - start.y;
+        const lengthSquared = dx * dx + dy * dy;
+        if (lengthSquared === 0) return Math.hypot(point.x - start.x, point.y - start.y);
+        const projection = Math.max(0, Math.min(1,
+            ((point.x - start.x) * dx + (point.y - start.y) * dy) / lengthSquared
+        ));
+        return Math.hypot(
+            point.x - (start.x + projection * dx),
+            point.y - (start.y + projection * dy)
+        );
+    }
+
+    function getDrawingDistance(drawing, chartPointer) {
+        const name = drawing.name();
+        if (name === 'circle') {
+            return Math.abs(Math.hypot(chartPointer.x - drawing.x(), chartPointer.y - drawing.y()) - drawing.radius());
+        }
+
+        if (name === 'marker') {
+            const circle = drawing.getChildren()[0];
+            return Math.abs(Math.hypot(chartPointer.x - circle.x(), chartPointer.y - circle.y()) - circle.radius());
+        }
+
+        if (name === 'line' || name === 'arrow') {
+            const line = drawing.getChildren()[0];
+            const points = line.points();
+            return distanceToSegment(
+                chartPointer,
+                { x: points[0], y: points[1] },
+                { x: points[2], y: points[3] }
+            );
+        }
+
+        if (name === 'label') {
+            const rect = drawing.getClientRect({ relativeTo: stage });
+            const screenPointer = stage.getPointerPosition();
+            const dx = Math.max(rect.x - screenPointer.x, 0, screenPointer.x - rect.x - rect.width);
+            const dy = Math.max(rect.y - screenPointer.y, 0, screenPointer.y - rect.y - rect.height);
+            return Math.hypot(dx, dy) / Math.max(stage.scaleX(), 0.0001);
+        }
+
+        return Infinity;
+    }
+
+    function eraseAt(pointer) {
+        const chartPointer = toChartSpace(pointer);
+        const tolerance = 2 / Math.max(stage.scaleX(), 0.0001);
+        const drawings = [
+            ...appState.drawings.lines,
+            ...appState.drawings.arrows,
+            ...appState.drawings.circles,
+            ...appState.drawings.markers,
+            ...appState.drawings.labels,
+        ];
+        let nearest = null;
+        for (let index = drawings.length - 1; index >= 0; index -= 1) {
+            const drawing = drawings[index];
+            const distance = getDrawingDistance(drawing, chartPointer);
+            if (distance <= tolerance && (!nearest || distance < nearest.distance)) {
+                nearest = { drawing, distance };
+            }
+        }
+        if (!nearest) return;
+
+        for (const collection of Object.values(appState.drawings)) {
+            const index = collection.indexOf(nearest.drawing);
+            if (index >= 0) collection.splice(index, 1);
+        }
+        nearest.drawing.destroy();
+        appState.toolLayer.batchDraw();
+    }
+
     function isToolHit(child, pointer) {
         if (!child) return false;
 
@@ -393,6 +467,11 @@ function initEventListeners() {
 
         if (DRAWING_MODES.has(appState.mode) && !isRightClick) {
             handleDrawingPointerDown(pointer);
+            return;
+        }
+
+        if (appState.mode === 'ERASER_ACTIVE' && !isRightClick) {
+            eraseAt(pointer);
             return;
         }
 
