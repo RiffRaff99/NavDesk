@@ -251,65 +251,125 @@ Switching drawing tools preserves all completed drawing objects. Reset removes t
 
 ## Product Roadmap
 
-Navdesk remains a simulator for practicing nautical chart-work concepts. It does not replace training with a real paper chart and real navigation instruments, and it does not provide an examination mode. The following roadmap is ordered by priority.
+Navdesk remains a simulator for practicing nautical chart-work concepts. It does not replace training with a real paper chart and real navigation instruments, and it does not provide an examination mode. Each roadmap item should be developed on its own feature branch, reviewed locally, and merged to `main` as a focused commit or small commit series.
 
-### Phase 1: Precision and Interaction
+### Git Workflow
 
-1. **Compass improvements**
+- `main` contains the latest integrated, usable version.
+- Each feature starts from `main` in a branch named `feature/<short-name>`.
+- Documentation-only changes use `docs/<short-name>`.
+- A feature branch should contain logically grouped commits, for example implementation, UI wiring, and documentation.
+- Do not combine unrelated roadmap items in one commit.
+- Merge or fast-forward only after the feature's focused checks are complete.
+- Later beta work may add release tags such as `v0.2.0` and `v1.0.0`.
+
+### Release 0.2: Precision and Basic Interaction
+
+#### Branch: `feature/compass-precision`
+
+1. **Compass handling**
 	- Add a one-pixel interaction handle at the closed end.
 	- Improve visual feedback for span definition, attachment, placement, and edge alignment.
 	- Preserve precise pointer-based operation for extracting values from the chart.
-	- Consider optional fine-rotation assistance without adding prohibited navigation aids.
+	- Keep the compass span fixed while moving or rotating.
+
+Suggested commits:
+
+- `Add compass interaction handle`
+- `Improve compass state feedback`
+- `Document compass precision behavior`
+
+#### Branch: `feature/pan-zoom-mode`
 
 2. **Dedicated Pan/Zoom mode**
 	- Add a clearly visible default Pan/Zoom toolbar button.
 	- Pressing `Escape` always returns to `PAN_ZOOM`.
 	- Leaving drawing and tool modes must be unambiguous.
+	- Preserve the current chart, tool, and drawing state when only the mode changes.
+
+Suggested commits:
+
+- `Add Pan Zoom toolbar mode`
+- `Return to Pan Zoom on Escape`
+- `Document default navigation mode`
+
+#### Branch: `feature/eraser`
 
 3. **Eraser**
 	- Add an eraser mode for drawing objects.
 	- Delete the nearest line or element only when it is within 2 screen pixels of the pointer.
-	- Keep the tolerance constant at every zoom level by converting screen coordinates to chart coordinates.
+	- Keep the tolerance constant at every zoom level by converting the screen-space tolerance to chart space.
 	- Support lines, arrows, circles, markers, and labels.
+	- Define deterministic behavior for overlapping objects, preferably nearest visible object first.
 	- Keep NT, AT, and compass deletion protected; these remain removable through Reset only.
 
-### Phase 2: Overlay Persistence
+Suggested commits:
 
-5. **JSON overlay export**
-	- Export the current exercise state as a JSON file selected by the user through the normal file system.
-	- Do not embed or copy the chart image into the JSON file.
-	- Store the chart filename as informational metadata only.
-	- Store a format version, export timestamp, tool states, NT/AT geometry and active sides, snap relationships, compass state, drawings, and labels.
+- `Add screen-space eraser hit testing`
+- `Connect eraser to drawing objects`
+- `Document eraser interaction rules`
 
-6. **JSON overlay import**
-	- The user opens the chart first and then imports the matching overlay JSON.
-	- Apply the overlay to the currently open chart without relying on persistent local file paths.
-	- Show the stored chart filename as a compatibility hint.
-	- Warn when the current chart filename differs from the metadata, but do not make local path matching a requirement.
-	- Let the user manage, rename, copy, archive, and delete overlay files in the operating system.
+### Release 0.3: Portable Exercise Overlays
 
-### Phase 3: OpenSeaMap
+#### Branch: `feature/json-overlay`
 
-7. **Optional OpenSeaMap mode**
+4. **JSON overlay export and import**
+	- Export and import the current exercise state as a JSON file managed by the user's file system.
+	- The user opens the chart first and then imports its overlay.
+	- Never embed or copy the chart image into the JSON file.
+	- Store exactly these user-facing metadata fields: exercise number, notes, and chart source.
+	- Store technical state required for restoration: format version, export timestamp, NT/AT position and rotation, active sides, snap relationships, compass position, rotation and span, drawings, and labels.
+	- Display the stored chart filename or source as a compatibility hint.
+	- Warn when the current chart differs from the overlay metadata, but do not require local path matching.
+	- Let the user rename, copy, archive, and delete overlay files in the operating system.
+
+Suggested commits:
+
+- `Define versioned overlay schema`
+- `Export chart overlay as JSON`
+- `Import overlay onto open chart`
+- `Add exercise notes and chart metadata`
+- `Document overlay file workflow`
+
+### Release 0.4: OpenSeaMap Experimentation
+
+#### Branch: `feature/openseamap-source`
+
+5. **Optional OpenSeaMap mode**
 	- Provide an optional low-cost or no-paywall way to experiment with chart-work exercises.
 	- Do not bundle copyrighted SBF examination charts.
 	- Verify the current OpenStreetMap, OpenSeaMap, tile-provider, and attribution requirements before implementation.
 	- Display source, attribution, license information, and retrieval date where required.
-	- Evaluate whether scale, projection, depth information, buoys, and landmarks are sufficient for each exercise.
+	- Check whether the available chart content supports the relevant exercise objects and visual references.
 	- Keep externally sourced maps and user-provided maps separate from overlay data.
+	- Do not add automatic course calculation, GPS assistance, or other digital navigation aids.
 
-### Phase 4: Quality and Release
+Suggested commits:
 
-8. **Quality assurance**
+- `Document OpenSeaMap licensing requirements`
+- `Add optional OpenSeaMap chart source`
+- `Add map attribution display`
+- `Document external chart source behavior`
+
+### Later: Beta and Production Quality
+
+#### Branches: `qa/<short-name>` and `release/<version>`
+
+6. **Quality assurance**
 	- Add repeatable integration tests for the complete Exercise 1 workflow.
 	- Test snap tolerances in screen pixels across zoom levels.
-	- Test pan, zoom, pointer precision, compass states, erasing, undo/redo, and JSON round trips.
+	- Test pan, zoom, pointer precision, compass states, erasing, and JSON round trips.
 	- Check behavior with mouse, trackpad, and touch input where supported.
+	- Add regression coverage only when the project is shared with external users.
 
-9. **Beta and production preparation**
-	- Start only when the project is shared with external users.
+7. **Beta and production preparation**
 	- Add issue reporting, compatibility documentation, release notes, and regression coverage.
 	- Review privacy, licensing, attribution, and offline behavior before production release.
+	- Use release tags and keep `main` deployable.
+
+### Existing Snap Behavior
+
+Snap-up is not a separate roadmap feature. A double-click on NT or AT already returns that triangle to its active positioning mode while preserving its rotation, so the user can move it away from the current relationship and effectively release the snap. The implementation must continue to clear stale constraint state when a snap is missed or released.
 
 ### Explicitly Out of Scope
 
@@ -317,13 +377,15 @@ Navdesk remains a simulator for practicing nautical chart-work concepts. It does
 - No permanent GPS, automatic course calculation, or other digital navigation aid is added to the simulator.
 - No copyrighted examination charts are distributed with Navdesk.
 - No internal overlay library or session-management database is required initially; the user's file system manages exported JSON overlays.
-- Undo and redo are currently out of scope.
+- Undo and redo are out of scope for the foreseeable roadmap.
+- Card rotation is out of scope; the input scan, image, or PDF must already have the required orientation.
+- A separate chart-scale calibration feature is out of scope; the loaded chart image defines the working scale for the paper-chart simulation.
 
 ### Priority Order
 
 1. Compass precision and handling
 2. Pan/Zoom mode and `Escape` handling
 3. Eraser
-4. JSON overlay import/export
-5. OpenSeaMap mode
+4. JSON overlay import/export with exercise number, notes, and chart source
+5. Optional OpenSeaMap chart source
 6. QA, beta, and production preparation

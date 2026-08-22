@@ -358,6 +358,8 @@ function initEventListeners() {
             if (appState.alignTriangle) {
                 updateHoveredSide(appState.alignTriangle, chartPointer);
             }
+            clearTriangleConstraint(appState.navTriangle);
+            clearTriangleConstraint(appState.alignTriangle);
             appState.mode = 'NAV_ACTIVE';
             appState.activeTool = null;
             updateStatus('status_navActive');
@@ -367,6 +369,8 @@ function initEventListeners() {
         if (hitTool && hitTool === appState.alignTriangle) {
             const chartPointer = toChartSpace(stage.getPointerPosition());
             updateHoveredSide(appState.alignTriangle, chartPointer, true);
+            clearTriangleConstraint(appState.alignTriangle);
+            clearTriangleConstraint(appState.navTriangle);
             appState.mode = 'ALIGN_ACTIVE';
             appState.activeTool = null;
             updateStatus('status_alignActive');
