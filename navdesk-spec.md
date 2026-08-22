@@ -328,7 +328,7 @@ Implemented commit on this branch:
 
 ### Release 0.3: Portable Exercise Overlays
 
-#### Branch: `feature/json-overlay`
+#### Branch: `feature/json-overlay` (in progress)
 
 4. **JSON overlay export and import**
 	- Export and import the current exercise state as a JSON file managed by the user's file system.
