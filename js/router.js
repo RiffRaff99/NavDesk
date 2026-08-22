@@ -335,6 +335,16 @@ function restoreOverlay(raw) {
         appState.alignTriangle = restoreTriangle(overlay.triangles.align, createAlignTriangle);
         appState.toolLayer.add(appState.alignTriangle);
     }
+    if (appState.navTriangle && appState.alignTriangle
+        && overlay.triangles.nav && overlay.triangles.align
+        && overlay.triangles.nav.constrained && overlay.triangles.align.constrained) {
+        appState.navTriangle._triangle.constrained = true;
+        appState.navTriangle._triangle.constraintTool = appState.alignTriangle;
+        appState.navTriangle._triangle.constraintSide = overlay.triangles.nav.constraintSide;
+        appState.alignTriangle._triangle.constrained = true;
+        appState.alignTriangle._triangle.constraintTool = appState.navTriangle;
+        appState.alignTriangle._triangle.constraintSide = overlay.triangles.align.constraintSide;
+    }
     if (overlay.compass) {
         appState.compass = createCompass();
         appState.compass.position({ x: overlay.compass.x, y: overlay.compass.y });
@@ -348,6 +358,10 @@ function restoreOverlay(raw) {
         appState.toolLayer.add(drawing);
         const collection = appState.drawings[data.type === 'arrow' ? 'arrows' : data.type + 's'];
         if (collection) collection.push(drawing);
+    }
+    if (overlay.metadata && overlay.metadata.chartSource && appState.chartFileName
+        && overlay.metadata.chartSource !== appState.chartFileName) {
+        alert('Overlay-Karte: ' + overlay.metadata.chartSource + '\nAktuelle Karte: ' + appState.chartFileName);
     }
     appState.toolLayer.batchDraw();
 }
