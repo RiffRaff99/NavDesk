@@ -321,7 +321,12 @@ function initEventListeners() {
         if (!nearest || nearest.distance > tolerance) return false;
 
         const navTransform = appState.navTriangle.getTransform();
-        const navCentroid = navTransform.point({ x: 0, y: TRIANGLE_HEIGHT * 2 / 3 });
+        
+        // Holt sich die dynamische Höhe direkt aus dem gespeicherten Zustand des Nav-Dreiecks
+        // Falls aus irgendeinem Grund nicht vorhanden, nutzen wir 140 als sicheren Fallback (entspricht ca. dem alten 420/3)
+        const currentHeight = appState.navTriangle.triangleHeight || 140;
+        const navCentroid = navTransform.point({ x: 0, y: currentHeight * 2 / 3 });
+
         appState.alignTriangle.setActiveSide(
             appState.alignTriangle.getActiveSide(),
             nearest.nearest,

@@ -34,6 +34,7 @@
         }
         .toolbar button:hover { background: rgba(40, 51, 73, 0.9); }
         .toolbar button.tool-active { background: #bfdbfe; color: #172554; border-color: #60a5fa; }
+        
         .divider-v { width: 1px; height: 24px; background: #4a5669; flex-shrink: 0; }
         .status-display {
             background: rgba(10, 15, 30, 0.6); border: 1px solid #1e2a3d;
@@ -71,10 +72,6 @@
 
     <!-- Toolbar UI (top overlay) -->
     <div class="toolbar ui-layer">
-        <button class="tool-button" id="btn-pan" onclick="app.setMode('pan')">
-            ✋ <span id="lbl-pan">Pan/Zoom</span>
-        </button>
-
         <!-- Import button with hidden file input supporting PDFs -->
         <label onclick="document.getElementById('btn-import').click()">
             <span id="lbl-import">Karte laden</span>
@@ -85,11 +82,14 @@
         </button>
         <label class="tool-button" for="btn-overlay-import">
             ⇧ <span id="lbl-overlay-import">Overlay importieren</span>
-        </label>
+        </label> = true
         <input type="file" id="btn-overlay-import" accept="application/json,.json" style="display:none;">
 
         <div class="divider-v"></div>
-
+        <button class="tool-button" id="btn-pan" onclick="app.setMode('pan')">
+            ✋ <span id="lbl-pan">Pan/Zoom</span>
+        </button>
+        <div class="divider-v"></div>
         <!-- Tool buttons -->
         <button class="tool-button" id="btn-nav" onclick="app.setMode('nav')">
             📐 <span id="lbl-nav">Nav-Dreieck</span>
@@ -100,6 +100,7 @@
         <button class="tool-button" id="btn-compass" onclick="app.setMode('compass')">
             ⊥ <span id="lbl-compass">Zirkel</span>
         </button>
+        <div class="divider-v"></div>
         <button class="tool-button" id="btn-line" onclick="app.setMode('line')">
             ／ <span id="lbl-line">Linie</span>
         </button>
@@ -118,6 +119,7 @@
         <button class="tool-button" id="btn-eraser" onclick="app.setMode('eraser')">
             ⌫ <span id="lbl-eraser">Radierer</span>
         </button>
+        <div class="divider-v"></div>
         <button class="tool-button" id="btn-notes" type="button">
             ▤ <span id="lbl-notes-toggle">Notizen</span>
         </button>
