@@ -42,8 +42,7 @@ const i18n = {
             msg_noChart: 'Bitte zuerst eine Seekarte laden.',
             msg_firstNav: 'First ein Nav-Dreieck anlegen.',
             msg_textPrompt: 'Beschriftung eingeben:',
-            msg_exerciseNumber: 'Übungsnummer:',
-            msg_overlayNotes: 'Notizen:',
+            msg_overlayFilename: 'Dateiname für Overlay:',
         },
         en: {
             lbl_panZoom: 'Pan/Zoom',
@@ -80,8 +79,7 @@ const i18n = {
             msg_noChart: 'Please load a sea chart first.',
             msg_firstNav: 'Place a Nav-Triangle first.',
             msg_textPrompt: 'Enter label text:',
-            msg_exerciseNumber: 'Exercise number:',
-            msg_overlayNotes: 'Notes:',
+            msg_overlayFilename: 'Overlay filename:',
         }
     },
 

@@ -256,7 +256,6 @@ function createOverlayState() {
         version: OVERLAY_VERSION,
         exportedAt: new Date().toISOString(),
         metadata: {
-            exerciseNumber: window.prompt(i18n.t('msg_exerciseNumber'), '') || '',
             notes: appState.notes || '',
             chartSource: appState.chartFileName || '',
         },
@@ -276,11 +275,17 @@ function createOverlayState() {
 
 function downloadOverlay() {
     const overlay = createOverlayState();
-    const filename = (overlay.metadata.chartSource || 'navdesk').replace(/\.[^.]+$/, '') + '_overlay.json';
+    const requestedName = window.prompt(
+        i18n.t('msg_overlayFilename'),
+        (overlay.metadata.chartSource || 'navdesk').replace(/\.[^.]+$/, '') + '_overlay.json'
+    );
+    if (requestedName === null) return;
+    const filename = requestedName.trim() || 'navdesk_overlay.json';
+    const downloadName = filename.toLowerCase().endsWith('.json') ? filename : filename + '.json';
     const blob = new Blob([JSON.stringify(overlay, null, 2)], { type: 'application/json' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    link.download = filename;
+    link.download = downloadName;
     link.click();
     URL.revokeObjectURL(link.href);
 }
