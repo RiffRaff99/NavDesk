@@ -335,8 +335,9 @@ Implemented commit on this branch:
 	- Export and import the current exercise state as a JSON file managed by the user's file system.
 	- The user opens the chart first and then imports its overlay.
 	- Never embed or copy the chart image into the JSON file.
-	- Store exactly these user-facing metadata fields: exercise number, notes, and chart source.
+	- Store notes and chart source as overlay metadata; the exercise number, if desired, belongs in the notes.
 	- Notes are entered in a movable, show/hide notepad panel rather than an export-time prompt.
+	- Ask the user for the overlay filename during export; the application does not manage the user's overlay files.
 	- Store technical state required for restoration: format version, export timestamp, NT/AT position and rotation, active sides, snap relationships, compass position, rotation and span, drawings, and labels.
 	- Display the stored chart filename or source as a compatibility hint.
 	- Warn when the current chart differs from the overlay metadata, but do not require local path matching.
@@ -419,6 +420,6 @@ Snap-up is not a separate roadmap feature. A double-click on NT or AT already re
 1. Compass precision and handling
 2. Pan/Zoom mode and `Escape` handling
 3. Eraser
-4. JSON overlay import/export with exercise number, notes, and chart source
+4. JSON overlay import/export with user-selected filename, notes, and chart source
 5. Optional OpenSeaMap chart source
 6. QA, beta, and production preparation
