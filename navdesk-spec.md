@@ -267,7 +267,7 @@ Navdesk remains a simulator for practicing nautical chart-work concepts. It does
 
 ### Release 0.2: Precision and Basic Interaction
 
-#### Branch: `feature/compass-precision` (in progress)
+#### Branch: `feature/compass-precision` (implemented)
 
 1. **Compass handling**
 	- Add a one-pixel visual and precision interaction handle at the closed end.
@@ -280,6 +280,11 @@ Suggested commits:
 - `Add compass interaction handle`
 - `Improve compass state feedback`
 - `Document compass precision behavior`
+
+Implemented commits on this branch:
+
+- `0a95e00 Document compass precision milestone`
+- `Add compass precision handle and states`
 
 #### Branch: `feature/pan-zoom-mode`
 
