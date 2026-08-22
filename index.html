@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SBF Digitaler Kartentisch</title>
+    <!-- Tailwind CSS utilities -->
+    <script src="js/tailwind.js"></script>
+    <!-- Konva.js canvas framework -->
+    <script src="js/konva.min.js"></script>
+    <!-- PDF.js CDN for rendering PDFs to images -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
+    <style>
+        body, html { margin: 0; padding: 0; overflow: hidden; background-color: #1e293b; user-select: none; }
+        #container { width: 100vw; height: 100vh; position: absolute; top: 0; left: 0; z-index: 10; }
+        .ui-layer { z-index: 20; position: relative; pointer-events: auto; }
+
+        /* Toolbar styling */
+        .toolbar {
+            position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
+            background: rgba(15, 23, 42, 0.9); border: 1px solid #374151;
+            backdrop-filter: blur(8px); padding: 12px 24px;
+            border-radius: 12px; box-shadow: 0 0 40px rgba(0,0,0,0.6);
+            display: flex; align-items: center; gap: 16px; max-width: 95vw;
+        }
+        .toolbar label, .toolbar button {
+            font-size: 14px; font-weight: 600; padding: 8px 16px;
+            border-radius: 8px; cursor: pointer; transition: all 0.15s ease;
+        }
+        .toolbar label { background: #2563eb; color: white; }
+        .toolbar label:hover { background: #3b77f6; }
+        .toolbar button {
+            background: rgba(30, 41, 59, 0.8); color: #cbd5e1; border: 1px solid #4a5669;
+        }
+        .toolbar button:hover { background: rgba(40, 51, 73, 0.9); }
+        .toolbar button.tool-active { background: #bfdbfe; color: #172554; border-color: #60a5fa; }
+        .divider-v { width: 1px; height: 24px; background: #4a5669; flex-shrink: 0; }
+        .status-display {
+            background: rgba(10, 15, 30, 0.6); border: 1px solid #1e2a3d;
+            padding: 8px 16px; border-radius: 8px; font-size: 12px;
+            font-family: monospace; color: #7f8fa0; min-width: 240px; text-align: center;
+        }
+        .btn-reset { background: rgba(139, 0, 0, 0.3); border-color: rgba(167, 50, 50, 0.4); color: #f87f7f; }
+        .btn-reset:hover { background: rgba(180, 0, 0, 0.4); }
+        .status-bar {
+            position: fixed; bottom: 16px; right: 16px; z-index: 25; pointer-events: auto;
+            background: rgba(10, 15, 30, 0.8); border: 1px solid #1e2a3d;
+            padding: 8px 16px; border-radius: 8px; font-size: 12px;
+            font-family: monospace; color: #7f8fa0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Konva canvas container -->
+    <div id="container" style="position:absolute;top:0;left:0;width:100%;height:100%"></div>
+
+    <!-- Toolbar UI (top overlay) -->
+    <div class="toolbar ui-layer">
+        <!-- Import button with hidden file input supporting PDFs -->
+        <label onclick="document.getElementById('btn-import').click()">
+            <span id="lbl-import">Karte laden</span>
+        </label>
+        <input type="file" id="btn-import" accept="image/*,application/pdf" style="display:none;">
+
+        <div class="divider-v"></div>
+
+        <!-- Tool buttons -->
+        <button class="tool-button" id="btn-nav" onclick="app.setMode('nav')">
+            📐 <span id="lbl-nav">Nav-Dreieck</span>
+        </button>
+        <button class="tool-button" id="btn-align" onclick="app.setMode('align')">
+            📐 <span id="lbl-align">Anlegedreieck</span>
+        </button>
+        <button class="tool-button" id="btn-compass" onclick="app.setMode('compass')">
+            ⊥ <span id="lbl-compass">Zirkel</span>
+        </button>
+        <button class="tool-button" id="btn-line" onclick="app.setMode('line')">
+            ／ <span id="lbl-line">Linie</span>
+        </button>
+        <button class="tool-button" id="btn-arrow" onclick="app.setMode('arrow')">
+            → <span id="lbl-arrow">Pfeil</span>
+        </button>
+        <button class="tool-button" id="btn-circle" onclick="app.setMode('circle')">
+            ○ <span id="lbl-circle">Kreis</span>
+        </button>
+        <button class="tool-button" id="btn-marker" onclick="app.setMode('marker')">
+            ⊕ <span id="lbl-marker">Marker</span>
+        </button>
+        <button class="tool-button" id="btn-label" onclick="app.setMode('label')">
+            T <span id="lbl-label">Text</span>
+        </button>
+
+        <div class="divider-v"></div>
+
+        <!-- Status display -->
+        <div class="status-display ui-layer">
+            <span style="font-weight:bold;color:#7f8fa0;">Ready — drag to position triangles, scroll to zoom</span>
+        </div>
+
+        <div class="divider-v"></div>
+
+        <!-- Reset button -->
+        <button id="btn-clear" class="btn-reset" onclick="app.reset()">
+            ❌ <span id="lbl-clear">Reset</span>
+        </button>
+    </div>
+
+    <!-- Script load order: geometry → router → i18n → app (core) → event listeners -->
+    <script src="js/triangles.js"></script>
+    <script src="js/zirkel.js"></script>
+    <script src="js/drawingTools.js"></script>
+    <script src="js/router.js"></script>
+    <script src="js/i18n.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/eventListeners.js"></script>
+</body>
+</html>

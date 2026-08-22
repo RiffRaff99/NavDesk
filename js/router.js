@@ -1,0 +1,236 @@
+// ============================================================
+// navdesk - Mode router
+// Keeps all state transitions centralized so tools can be added
+// one by one without hard-coding state into the UI or the canvas.
+// ============================================================
+
+const MODE_ALIASES = {
+    nav: 'NAV_ACTIVE',
+    'nav-active': 'NAV_ACTIVE',
+    align: 'ALIGN_ACTIVE',
+    'align-active': 'ALIGN_ACTIVE',
+    compass: 'COMPASS_ACTIVE',
+    'compass-active': 'COMPASS_ACTIVE',
+    pan: 'PAN_ZOOM',
+    'pan-zoom': 'PAN_ZOOM',
+    parallel: 'PARALLEL',
+    'NAV_ACTIVE': 'NAV_ACTIVE',
+    'ALIGN_ACTIVE': 'ALIGN_ACTIVE',
+    'PAN_ZOOM': 'PAN_ZOOM',
+    'PARALLEL': 'PARALLEL',
+    'COMPASS_ACTIVE': 'COMPASS_ACTIVE',
+    line: 'LINE_ACTIVE',
+    arrow: 'ARROW_ACTIVE',
+    circle: 'CIRCLE_ACTIVE',
+    marker: 'MARKER_ACTIVE',
+    label: 'LABEL_ACTIVE',
+    'LINE_ACTIVE': 'LINE_ACTIVE',
+    'ARROW_ACTIVE': 'ARROW_ACTIVE',
+    'CIRCLE_ACTIVE': 'CIRCLE_ACTIVE',
+    'MARKER_ACTIVE': 'MARKER_ACTIVE',
+    'LABEL_ACTIVE': 'LABEL_ACTIVE',
+};
+
+const DRAWING_MODES = new Set(['LINE_ACTIVE', 'ARROW_ACTIVE', 'CIRCLE_ACTIVE', 'MARKER_ACTIVE', 'LABEL_ACTIVE']);
+
+function clearDrawingPreview() {
+    if (appState.drawingPreview) {
+        appState.drawingPreview.destroy();
+        appState.drawingPreview = null;
+    }
+    appState.drawingStart = null;
+}
+
+function normalizeModeName(modeName) {
+    if (modeName === undefined || modeName === null) {
+        return appState.mode || 'PAN_ZOOM';
+    }
+
+    const key = String(modeName).trim().toLowerCase();
+    if (MODE_ALIASES[key]) return MODE_ALIASES[key];
+    if (MODE_ALIASES[String(modeName)]) return MODE_ALIASES[String(modeName)];
+    return String(modeName).toUpperCase();
+}
+
+function createNavTriangle() {
+    return createTriangleGeometry(true);
+}
+
+function createAlignTriangle() {
+    return createTriangleGeometry(false);
+}
+
+function transition(fromMode, toMode) {
+    const from = normalizeModeName(fromMode || appState.mode);
+    const target = normalizeModeName(toMode);
+    const transitionKey = from + '_' + target;
+
+    clearDrawingPreview();
+
+    if (target === 'COMPASS_ACTIVE' && !appState.compass) {
+        appState.compass = createCompass();
+        if (appState.navTriangle) {
+            appState.compass.rotation(appState.navTriangle.rotation());
+        }
+        appState.compass.x(0);
+        appState.compass.y(0);
+        appState.compass.visible(false);
+        if (appState.toolLayer) appState.toolLayer.add(appState.compass);
+    }
+
+    if (DRAWING_MODES.has(from) || DRAWING_MODES.has(target)) {
+        appState.mode = target;
+        if (typeof updateStatus === 'function') {
+            updateStatus(target === 'PAN_ZOOM' ? 'status_ready' : 'status_' + target.toLowerCase());
+        }
+        return target;
+    }
+
+    if (appState.stage && !appState.toolLayer) {
+        appState.toolLayer = new Konva.Layer();
+        appState.stage.add(appState.toolLayer);
+    }
+
+    switch (transitionKey) {
+        case 'PAN_ZOOM_NAV_ACTIVE':
+        case 'PARALLEL_NAV_ACTIVE':
+        case 'ALIGN_ACTIVE_NAV_ACTIVE':
+            if (!appState.navTriangle) {
+                appState.navTriangle = createNavTriangle();
+                appState.navTriangle.visible(false);
+                if (appState.toolLayer) {
+                    appState.toolLayer.add(appState.navTriangle);
+                }
+            }
+            break;
+
+        case 'PAN_ZOOM_ALIGN_ACTIVE':
+        case 'PARALLEL_ALIGN_ACTIVE':
+        case 'NAV_ACTIVE_ALIGN_ACTIVE':
+            if (!appState.alignTriangle) {
+                appState.alignTriangle = createAlignTriangle();
+                if (appState.toolLayer) {
+                    appState.toolLayer.add(appState.alignTriangle);
+                }
+            }
+            break;
+
+        case 'PAN_ZOOM_COMPASS_ACTIVE':
+        case 'PARALLEL_COMPASS_ACTIVE':
+        case 'NAV_ACTIVE_COMPASS_ACTIVE':
+            if (!appState.compass) {
+                appState.compass = createCompass();
+                if (appState.navTriangle) {
+                    appState.compass.rotation(appState.navTriangle.rotation());
+                }
+                appState.compass.x(0);
+                appState.compass.y(0);
+                appState.compass.visible(false);
+                if (appState.toolLayer) appState.toolLayer.add(appState.compass);
+            }
+            break;
+
+        case 'NAV_ACTIVE_PARALLEL':
+            if (appState.navTriangle) {
+                const pointer = getLocalPointer();
+                appState.navTriangle.x(pointer.x);
+                appState.navTriangle.y(pointer.y);
+                appState.navTriangle.visible(true);
+                appState.parallelAnchorX = pointer.x;
+                appState.parallelAnchorY = pointer.y;
+                appState.activeTool = appState.navTriangle;
+            }
+            break;
+
+        case 'ALIGN_ACTIVE_PARALLEL':
+            if (appState.alignTriangle) {
+                appState.activeTool = appState.alignTriangle;
+            }
+            break;
+
+        case 'PARALLEL_PARALLEL':
+            if (!appState.activeTool && appState.alignTriangle) {
+                appState.activeTool = appState.alignTriangle;
+            }
+            break;
+
+        case 'PARALLEL_PAN_ZOOM':
+            appState.parallelAnchorX = 0;
+            appState.parallelAnchorY = 0;
+            appState.activeTool = null;
+            break;
+
+        case 'NAV_ACTIVE_PAN_ZOOM':
+        case 'ALIGN_ACTIVE_PAN_ZOOM':
+            if (appState.alignTriangle) {
+                appState.alignTriangle.destroy();
+                appState.alignTriangle = null;
+            }
+            if (appState.navTriangle) {
+                appState.navTriangle.destroy();
+                appState.navTriangle = null;
+            }
+            appState.activeTool = null;
+            break;
+
+        default:
+            if (typeof console !== 'undefined') {
+                console.warn('Unknown transition:', from + ' -> ' + target);
+            }
+            break;
+    }
+
+    appState.mode = target;
+    if (typeof updateStatus === 'function') {
+        updateStatus(target === 'PAN_ZOOM' ? 'status_ready' : 'status_' + target.toLowerCase());
+    }
+    return target;
+}
+
+function initAppAPI(app) {
+    return {
+        importImage: function (file) {
+            if (file) loadChartFile(file);
+        },
+
+        setMode: function (modeName) {
+            const previous = appState.mode;
+            const target = normalizeModeName(modeName);
+
+            if (target === 'COMPASS_ACTIVE' && appState.compass) {
+                appState.compass.destroy();
+                appState.compass = null;
+                appState.activeTool = null;
+                appState.mode = 'PAN_ZOOM';
+                updateStatus('status_ready');
+                return;
+            }
+            if (previous === target) {
+                if (DRAWING_MODES.has(target)) clearDrawingPreview();
+                return;
+            }
+            transition(previous, target);
+        },
+
+        reset: function () {
+            if (appState.alignTriangle) {
+                appState.alignTriangle.destroy();
+                appState.alignTriangle = null;
+            }
+            if (appState.navTriangle) {
+                appState.navTriangle.destroy();
+                appState.navTriangle = null;
+            }
+            if (appState.compass) {
+                appState.compass.destroy();
+                appState.compass = null;
+            }
+            if (appState.compassCursor) {
+                appState.compassCursor.destroy();
+                appState.compassCursor = null;
+            }
+            appState.activeTool = null;
+            appState.mode = 'PAN_ZOOM';
+        },
+    };
+}
