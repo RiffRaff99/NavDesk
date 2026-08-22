@@ -241,6 +241,7 @@ Switching drawing tools preserves all completed drawing objects. Reset removes t
 - The file input accepts image files and PDFs and is hidden behind the chart-load control.
 - Active tool buttons receive the `tool-active` visual state according to the canonical mode.
 - A status display shows the current localized interaction state.
+- A movable notepad panel provides a persistent textarea for exercise notes and can be shown or hidden with a toolbar button.
 - The page uses a full-viewport canvas with a dark background and prevents browser text selection during chart interaction.
 
 ## Localization
@@ -335,6 +336,7 @@ Implemented commit on this branch:
 	- The user opens the chart first and then imports its overlay.
 	- Never embed or copy the chart image into the JSON file.
 	- Store exactly these user-facing metadata fields: exercise number, notes, and chart source.
+	- Notes are entered in a movable, show/hide notepad panel rather than an export-time prompt.
 	- Store technical state required for restoration: format version, export timestamp, NT/AT position and rotation, active sides, snap relationships, compass position, rotation and span, drawings, and labels.
 	- Display the stored chart filename or source as a compatibility hint.
 	- Warn when the current chart differs from the overlay metadata, but do not require local path matching.
@@ -352,6 +354,15 @@ Implemented commit on this branch:
 
 - `7554b35 Add JSON overlay import and export`
 - `c0bd511 Restore overlay snap relationships`
+
+#### Branch: `feature/notes-panel` (implemented)
+
+- Notes are entered in a movable notepad panel and are included automatically in overlay export.
+- The panel can be shown or hidden without changing the chart or tool state.
+
+Implemented commit on this branch:
+
+- `6c61b25 Add movable notes panel`
 
 ### Release 0.4: OpenSeaMap Experimentation
 

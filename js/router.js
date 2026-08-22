@@ -257,7 +257,7 @@ function createOverlayState() {
         exportedAt: new Date().toISOString(),
         metadata: {
             exerciseNumber: window.prompt(i18n.t('msg_exerciseNumber'), '') || '',
-            notes: window.prompt(i18n.t('msg_overlayNotes'), '') || '',
+            notes: appState.notes || '',
             chartSource: appState.chartFileName || '',
         },
         viewport: {
@@ -363,6 +363,9 @@ function restoreOverlay(raw) {
         && overlay.metadata.chartSource !== appState.chartFileName) {
         alert('Overlay-Karte: ' + overlay.metadata.chartSource + '\nAktuelle Karte: ' + appState.chartFileName);
     }
+    appState.notes = overlay.metadata && overlay.metadata.notes ? overlay.metadata.notes : '';
+    const notesText = document.getElementById('notes-text');
+    if (notesText) notesText.value = appState.notes;
     appState.toolLayer.batchDraw();
 }
 

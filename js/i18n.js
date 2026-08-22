@@ -21,6 +21,8 @@ const i18n = {
             lbl_eraser: 'Radierer',
             lbl_overlayExport: 'Overlay exportieren',
             lbl_overlayImport: 'Overlay importieren',
+            lbl_notesToggle: 'Notizen',
+            lbl_notesTitle: 'Notizblock',
             lbl_reset: 'Reset',
             
             status_ready: 'Karte bereit. Ziehen mit Linksklick, Zoomen mit Mausrad.',
@@ -57,6 +59,8 @@ const i18n = {
             lbl_eraser: 'Eraser',
             lbl_overlayExport: 'Export overlay',
             lbl_overlayImport: 'Import overlay',
+            lbl_notesToggle: 'Notes',
+            lbl_notesTitle: 'Notepad',
             lbl_reset: 'Reset',
             
             status_ready: 'Chart ready. Drag with left-click, zoom with mouse wheel.',
@@ -102,6 +106,8 @@ const i18n = {
             'lbl-eraser': 'lbl_eraser',
             'lbl-overlay-export': 'lbl_overlayExport',
             'lbl-overlay-import': 'lbl_overlayImport',
+            'lbl-notes-toggle': 'lbl_notesToggle',
+            'lbl-notes-title': 'lbl_notesTitle',
             'lbl-clear': 'lbl_reset',
         };
         

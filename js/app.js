@@ -30,6 +30,7 @@ const appState = {
 
     chartImage: null,  // Konva.Image reference for cleanup
     chartFileName: '',
+    notes: '',
 };
 
 // ---- Public API (wired after DOMContentLoaded) ----
@@ -95,6 +96,7 @@ function loadImageResult(src) {
         appState.chartImage = new Konva.Image({ image: img, x: 0, y: 0 });
         appState.chartFileName = appState.pendingChartFileName || '';
         appState.pendingChartFileName = '';
+        appState.notes = '';
         appState.baseLayer.add(appState.chartImage);
 
         // Center viewport on image center
@@ -191,6 +193,38 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (typeof i18n !== 'undefined' && i18n.apply) {
         i18n.apply();
+    }
+
+    const notesPanel = document.getElementById('notes-panel');
+    const notesHeader = document.getElementById('notes-header');
+    const notesText = document.getElementById('notes-text');
+    const notesButton = document.getElementById('btn-notes');
+    if (notesPanel && notesHeader && notesText && notesButton) {
+        notesText.value = appState.notes;
+        notesText.addEventListener('input', () => {
+            appState.notes = notesText.value;
+        });
+        notesButton.addEventListener('click', () => {
+            notesPanel.hidden = !notesPanel.hidden;
+        });
+        let draggingNotes = false;
+        let dragOffsetX = 0;
+        let dragOffsetY = 0;
+        notesHeader.addEventListener('pointerdown', (event) => {
+            draggingNotes = true;
+            const rect = notesPanel.getBoundingClientRect();
+            dragOffsetX = event.clientX - rect.left;
+            dragOffsetY = event.clientY - rect.top;
+            notesHeader.setPointerCapture(event.pointerId);
+        });
+        notesHeader.addEventListener('pointermove', (event) => {
+            if (!draggingNotes) return;
+            notesPanel.style.left = Math.max(0, event.clientX - dragOffsetX) + 'px';
+            notesPanel.style.top = Math.max(0, event.clientY - dragOffsetY) + 'px';
+        });
+        notesHeader.addEventListener('pointerup', () => {
+            draggingNotes = false;
+        });
     }
 
     const input = document.getElementById('btn-import');
