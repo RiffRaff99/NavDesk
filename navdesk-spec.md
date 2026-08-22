@@ -305,7 +305,7 @@ Implemented commit on this branch:
 
 - `4eb9f6f Add dedicated Pan Zoom mode`
 
-#### Branch: `feature/eraser` (in progress)
+#### Branch: `feature/eraser` (implemented)
 
 3. **Eraser**
 	- Add an eraser mode for drawing objects.
@@ -321,6 +321,10 @@ Suggested commits:
 - `Add screen-space eraser hit testing`
 - `Connect eraser to drawing objects`
 - `Document eraser interaction rules`
+
+Implemented commit on this branch:
+
+- `67e71d2 Add precise eraser tool`
 
 ### Release 0.3: Portable Exercise Overlays
 
