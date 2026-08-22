@@ -115,35 +115,46 @@ function loadImageResult(src) {
 
 function loadPdfAsImage(file) {
     if (typeof window.pdfjsLib !== 'undefined') {
-        window.pdfjsLib.getDocument({ data: file }).promise
-            .then((pdf) => pdf.getPage(1))
-            .then((page) => {
-                const targetWidth = window.innerWidth * 0.95;
-                const scale = targetWidth / page.getViewport({ scale: 1 }).width;
-                const viewport = page.getViewport({ scale });
+        const reader = new FileReader();
 
-                const pdfCanvas = document.createElement('canvas');
-                pdfCanvas.width = viewport.width;
-                pdfCanvas.height = viewport.height;
-                const ctx = pdfCanvas.getContext('2d');
+        // 1. Datei als ArrayBuffer einlesen
+        reader.onload = function (e) {
+            const arrayBuffer = e.target.result;
 
-                return page.render({ canvasContext: ctx, viewport }).promise.then(() => pdfCanvas);
-            })
-            .then((canvas) => {
-                loadImageResult(canvas.toDataURL());
-            })
-            .catch(() => {
-                alert(i18n.t('msg_noChart'));
-            });
+            // 2. PDF.js mit den Binärdaten (Uint8Array) füttern
+            window.pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise
+                .then((pdf) => pdf.getPage(1))
+                .then((page) => {
+                    const targetWidth = window.innerWidth * 0.95;
+                    const scale = targetWidth / page.getViewport({ scale: 1 }).width;
+                    const viewport = page.getViewport({ scale });
+
+                    const pdfCanvas = document.createElement('canvas');
+                    pdfCanvas.width = viewport.width;
+                    pdfCanvas.height = viewport.height;
+                    const ctx = pdfCanvas.getContext('2d');
+
+                    return page.render({ canvasContext: ctx, viewport }).promise.then(() => pdfCanvas);
+                })
+                .then((canvas) => {
+                    loadImageResult(canvas.toDataURL());
+                })
+                .catch((err) => {
+                    console.error("PDF Rendering Fehler:", err);
+                    alert(i18n.t('msg_noChart'));
+                });
+        };
+
+        reader.onerror = function () {
+            alert(i18n.t('msg_noChart'));
+        };
+
+        // Startet das Auslesen der Datei
+        reader.readAsArrayBuffer(file);
         return;
     }
-
-    const reader = new FileReader();
-    reader.onload = function (e) {
-        loadImageResult(e.target.result);
-    };
-    reader.readAsDataURL(file);
 }
+
 
 function updateStatus(statusKey) {
     const text = typeof i18n !== 'undefined' && i18n.t ? i18n.t(statusKey) : statusKey;
