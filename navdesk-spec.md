@@ -328,7 +328,7 @@ Implemented commit on this branch:
 
 ### Release 0.3: Portable Exercise Overlays
 
-#### Branch: `feature/json-overlay`
+#### Branch: `feature/json-overlay` (implemented)
 
 4. **JSON overlay export and import**
 	- Export and import the current exercise state as a JSON file managed by the user's file system.
@@ -347,6 +347,11 @@ Suggested commits:
 - `Import overlay onto open chart`
 - `Add exercise notes and chart metadata`
 - `Document overlay file workflow`
+
+Implemented commit on this branch:
+
+- `7554b35 Add JSON overlay import and export`
+- `c0bd511 Restore overlay snap relationships`
 
 ### Release 0.4: OpenSeaMap Experimentation
 

@@ -19,6 +19,8 @@ const i18n = {
             lbl_marker: 'Marker',
             lbl_label: 'Text',
             lbl_eraser: 'Radierer',
+            lbl_overlayExport: 'Overlay exportieren',
+            lbl_overlayImport: 'Overlay importieren',
             lbl_reset: 'Reset',
             
             status_ready: 'Karte bereit. Ziehen mit Linksklick, Zoomen mit Mausrad.',
@@ -38,6 +40,8 @@ const i18n = {
             msg_noChart: 'Bitte zuerst eine Seekarte laden.',
             msg_firstNav: 'First ein Nav-Dreieck anlegen.',
             msg_textPrompt: 'Beschriftung eingeben:',
+            msg_exerciseNumber: 'Übungsnummer:',
+            msg_overlayNotes: 'Notizen:',
         },
         en: {
             lbl_panZoom: 'Pan/Zoom',
@@ -51,6 +55,8 @@ const i18n = {
             lbl_marker: 'Marker',
             lbl_label: 'Text',
             lbl_eraser: 'Eraser',
+            lbl_overlayExport: 'Export overlay',
+            lbl_overlayImport: 'Import overlay',
             lbl_reset: 'Reset',
             
             status_ready: 'Chart ready. Drag with left-click, zoom with mouse wheel.',
@@ -70,6 +76,8 @@ const i18n = {
             msg_noChart: 'Please load a sea chart first.',
             msg_firstNav: 'Place a Nav-Triangle first.',
             msg_textPrompt: 'Enter label text:',
+            msg_exerciseNumber: 'Exercise number:',
+            msg_overlayNotes: 'Notes:',
         }
     },
 
@@ -92,6 +100,8 @@ const i18n = {
             'lbl-marker': 'lbl_marker',
             'lbl-label': 'lbl_label',
             'lbl-eraser': 'lbl_eraser',
+            'lbl-overlay-export': 'lbl_overlayExport',
+            'lbl-overlay-import': 'lbl_overlayImport',
             'lbl-clear': 'lbl_reset',
         };
         
