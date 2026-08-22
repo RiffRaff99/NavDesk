@@ -6,7 +6,7 @@ Navdesk is a browser-based digital chart table for nautical navigation exercises
 
 ## License and Third-Party Software
 
-This project is licensed under the [Insert Your License Name Here, e.g., MIT License / GNU GPLv3] - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the GNU GPLv3 - see the [LICENSE](LICENSE) file for details.
 
 ### Third-Party Libraries
 
