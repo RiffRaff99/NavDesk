@@ -355,6 +355,15 @@ Implemented commit on this branch:
 - `7554b35 Add JSON overlay import and export`
 - `c0bd511 Restore overlay snap relationships`
 
+#### Branch: `feature/notes-panel` (implemented)
+
+- Notes are entered in a movable notepad panel and are included automatically in overlay export.
+- The panel can be shown or hidden without changing the chart or tool state.
+
+Implemented commit on this branch:
+
+- `6c61b25 Add movable notes panel`
+
 ### Release 0.4: OpenSeaMap Experimentation
 
 #### Branch: `feature/openseamap-source`
