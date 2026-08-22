@@ -24,6 +24,7 @@ const MODE_ALIASES = {
     circle: 'CIRCLE_ACTIVE',
     marker: 'MARKER_ACTIVE',
     label: 'LABEL_ACTIVE',
+    eraser: 'ERASER_ACTIVE',
     'LINE_ACTIVE': 'LINE_ACTIVE',
     'ARROW_ACTIVE': 'ARROW_ACTIVE',
     'CIRCLE_ACTIVE': 'CIRCLE_ACTIVE',

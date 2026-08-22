@@ -18,6 +18,7 @@ const i18n = {
             lbl_circle: 'Kreis',
             lbl_marker: 'Marker',
             lbl_label: 'Text',
+            lbl_eraser: 'Radierer',
             lbl_reset: 'Reset',
             
             status_ready: 'Karte bereit. Ziehen mit Linksklick, Zoomen mit Mausrad.',
@@ -49,6 +50,7 @@ const i18n = {
             lbl_circle: 'Circle',
             lbl_marker: 'Marker',
             lbl_label: 'Text',
+            lbl_eraser: 'Eraser',
             lbl_reset: 'Reset',
             
             status_ready: 'Chart ready. Drag with left-click, zoom with mouse wheel.',
@@ -89,6 +91,7 @@ const i18n = {
             'lbl-circle': 'lbl_circle',
             'lbl-marker': 'lbl_marker',
             'lbl-label': 'lbl_label',
+            'lbl-eraser': 'lbl_eraser',
             'lbl-clear': 'lbl_reset',
         };
         
