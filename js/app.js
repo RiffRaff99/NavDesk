@@ -99,6 +99,18 @@ function loadImageResult(src) {
         appState.notes = '';
         appState.baseLayer.add(appState.chartImage);
 
+        // Wenn es ein PDF war, haben wir den exakten Wert bereits ermittelt
+        if (appState.pendingPxPerCm) {
+            appState.pxPerCm = appState.pendingPxPerCm;
+            appState.pendingPxPerCm = null; // zurücksetzen
+        } else {
+            // Es ist ein reines Bild -> Fallback auf Monitor-Standard (96 DPI)
+            appState.pxPerCm = 96 / 2.54;
+        }
+
+        appState.chartWidth = img.width;
+        appState.chartHeight = img.height;
+        
         // Center viewport on image center
         appState.stage.position({
             x: (window.innerWidth - img.width) / 2,
@@ -126,8 +138,12 @@ function loadPdfAsImage(file) {
                 .then((pdf) => pdf.getPage(1))
                 .then((page) => {
                     const targetWidth = window.innerWidth * 0.95;
-                    const scale = targetWidth / page.getViewport({ scale: 1 }).width;
+                    const unscaledViewport = page.getViewport({ scale: 1 });
+                    const scale = targetWidth / unscaledViewport.width;
                     const viewport = page.getViewport({ scale });
+                    //Exakte physikalische Pixeldichte aus den PDF-Metadaten berechnen
+                    const POINTS_PER_CM = 72 / 2.54;
+                    appState.pendingPxPerCm = scale * POINTS_PER_CM; 
 
                     const pdfCanvas = document.createElement('canvas');
                     pdfCanvas.width = viewport.width;

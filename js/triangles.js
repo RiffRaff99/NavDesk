@@ -1,23 +1,21 @@
-// Geometrische Konstanten für ein echtes SBF-Nav-Dreieck
-const CM_IN_PX = 96 / 2.54;
-const TRIANGLE_SIZE = 420 + (2 * CM_IN_PX); // Etwa 1 cm je Seite größer
-const TRIANGLE_HEIGHT = TRIANGLE_SIZE / 2; // 90° Winkel an der Spitze
-const TRIANGLE_SIDES = {
-    hypotenuse: {
-        start: { x: -TRIANGLE_SIZE / 2, y: TRIANGLE_HEIGHT },
-        end: { x: TRIANGLE_SIZE / 2, y: TRIANGLE_HEIGHT },
-    },
-    legA: {
-        start: { x: -TRIANGLE_SIZE / 2, y: TRIANGLE_HEIGHT },
-        end: { x: 0, y: 0 },
-    },
-    legB: {
-        start: { x: 0, y: 0 },
-        end: { x: TRIANGLE_SIZE / 2, y: TRIANGLE_HEIGHT },
-    },
-};
-
 function createTriangleGeometry(isNav) {
+    const currentChartWidth = appState.chartWidth || 1000;
+    const currentChartHeight = appState.chartHeight || 1000;
+
+    // Wir prüfen, ob die Karte im Hoch- oder Querformat vorliegt
+    const isPortrait = currentChartHeight > currentChartWidth;
+
+    // Ein echtes A4-Blatt ist im Hochformat 21cm breit, im Querformat 29.7cm lang.
+    const realChartWidthCm = isPortrait ? 21.0 : 29.7;
+    
+    const pxPerCm = (currentChartWidth / realChartWidthCm) * 0.75; //fix, scheint gut zu passen
+
+    const TARGET_TRIANGLE_WIDTH_CM = 26; 
+    
+    // 2. Multipliziere die berechnete Pixelgröße einfach mit dem customScale!
+    const triangleSize = TARGET_TRIANGLE_WIDTH_CM * pxPerCm;
+    const triangleHeight = triangleSize / 2;
+    
     const group = new Konva.Group({
         x: 0,
         y: 0,
@@ -25,35 +23,42 @@ function createTriangleGeometry(isNav) {
         name: isNav ? 'navTriangle' : 'alignTriangle'
     });
 
+     // Hilfreich für andere Funktionen: Wir speichern die Maße als Properties auf der Gruppe
+    group.triangleSize = triangleSize;
+    group.triangleHeight = triangleHeight;
+    group.pxPerCm = pxPerCm;
+
     // 1. Der transparente Dreiecks-Körper
     const body = new Konva.Line({
-        points: [-TRIANGLE_SIZE / 2, TRIANGLE_HEIGHT, TRIANGLE_SIZE / 2, TRIANGLE_HEIGHT, 0, 0],
+        points: [-triangleSize / 2, triangleHeight, triangleSize / 2, triangleHeight, 0, 0],
         closed: true,
         fill: isNav ? 'rgba(255, 255, 255, 0.18)' : 'rgba(200, 220, 255, 0.12)',
         stroke: null
     });
     group.add(body);
 
-    const frameStrokeWidth = 2;
-    const frameGap = 6;
+    // 5. Rahmen und Linien zeichnen
+    const frameStrokeWidth = Math.max(2, pxPerCm * 0.05); // Skaliert die Strichstärke leicht mit
+    const frameGap = Math.max(6, pxPerCm * 0.15);       // Skaliert die Lücke an der Null-Marke mit
+
     group.add(
         new Konva.Line({
-            points: [-TRIANGLE_SIZE / 2, TRIANGLE_HEIGHT, 0, 0],
+            points: [-triangleSize / 2, triangleHeight, 0, 0],
             stroke: '#000000',
             strokeWidth: frameStrokeWidth,
         }),
         new Konva.Line({
-            points: [0, 0, TRIANGLE_SIZE / 2, TRIANGLE_HEIGHT],
+            points: [0, 0, triangleSize / 2, triangleHeight],
             stroke: '#000000',
             strokeWidth: frameStrokeWidth,
         }),
         new Konva.Line({
-            points: [-TRIANGLE_SIZE / 2, TRIANGLE_HEIGHT, -frameGap, TRIANGLE_HEIGHT],
+            points: [-triangleSize / 2, triangleHeight, -frameGap, triangleHeight],
             stroke: '#000000',
             strokeWidth: frameStrokeWidth,
         }),
         new Konva.Line({
-            points: [frameGap, TRIANGLE_HEIGHT, TRIANGLE_SIZE / 2, TRIANGLE_HEIGHT],
+            points: [frameGap, triangleHeight, triangleSize / 2, triangleHeight],
             stroke: '#000000',
             strokeWidth: frameStrokeWidth,
         })
@@ -64,9 +69,9 @@ function createTriangleGeometry(isNav) {
         // Horizontale Parallellinien im Abstand von je 15 Pixeln
         for (let i = 1; i <= 6; i++) {
             let h = i * 22; // Abstand der Linien
-            let w = TRIANGLE_SIZE * (1 - (h / TRIANGLE_HEIGHT)); // Breite auf dieser Höhe berechnen
+            let w = triangleSize * (1 - (h / triangleHeight)); // Breite auf dieser Höhe berechnen
             let line = new Konva.Line({
-                points: [-w / 2, TRIANGLE_HEIGHT - h, w / 2, TRIANGLE_HEIGHT - h],
+                points: [-w / 2, triangleHeight - h, w / 2, triangleHeight - h],
                 stroke: 'rgba(0, 0, 0, 0.2)',
                 strokeWidth: 1
             });
@@ -77,10 +82,16 @@ function createTriangleGeometry(isNav) {
     // 3. MATHEMATISCH PRÄZISE GRADSKALA (Halbkreis-Bogen)
     if (isNav) {
         // Der Radius des inneren Skalenbogens (ca. 80% der Dreieckshöhe)
-        const scaleRadius = TRIANGLE_HEIGHT * 0.78 - (2 * CM_IN_PX);
+        const scaleRadius = triangleHeight * 0.78 - (2 * pxPerCm);
         // Der mathematische Mittelpunkt des Bogens liegt auf dem roten Ankerpunkt (0, TRIANGLE_HEIGHT)
         const centerX = 0;
-        const centerY = TRIANGLE_HEIGHT;
+        const centerY = triangleHeight;
+
+        // Dynamische Schriftgröße (ca. 3.5 mm)
+        const dynamicFontSize = Math.max(10, pxPerCm * 0.35); 
+        const majorStroke = Math.max(1.5, pxPerCm * 0.04); 
+        const minorStroke = Math.max(1, pxPerCm * 0.02); 
+
 
         // Wir laufen von 10° bis 170° entlang des Bogens
         for (let angleDeg = 5; angleDeg <= 175; angleDeg++) {
@@ -109,7 +120,7 @@ function createTriangleGeometry(isNav) {
             let tick = new Konva.Line({
                 points: [startX, startY, endX, endY],
                 stroke: isMajor ? 'rgba(0, 0, 0, 0.7)' : 'rgba(0, 0, 0, 0.35)',
-                strokeWidth: isMajor ? 1.5 : 1
+                strokeWidth: isMajor ? majorStroke : minorStroke
             });
             group.add(tick);
 
@@ -119,8 +130,10 @@ function createTriangleGeometry(isNav) {
                 let innerCourse = angleDeg;          // Innere Skala (z.B. 10° bis 170°)
                 let outerCourse = angleDeg + 180;    // Äußere Skala (z.B. 190° bis 350°)
 
-                // Text-Position leicht außerhalb des Strichs ansetzen
-                let textDist = scaleRadius + 24;
+                // Abstand zum Strich dynamisch an die Pixeldichte koppeln!
+                // 0.6 * pxPerCm bedeutet: Der Text startet immer exakt 6 Millimeter außerhalb des Bogens.
+                let textDist = scaleRadius + (pxPerCm * 0.6);
+                
                 let textX = centerX + textDist * cos;
                 let textY = centerY - textDist * sin;
 
@@ -129,19 +142,21 @@ function createTriangleGeometry(isNav) {
                     x: textX,
                     y: textY,
                     text: `${innerCourse}\n${outerCourse}`,
-                    fontSize: 10,
+                    fontSize: dynamicFontSize,
                     fontFamily: 'monospace',
-                    fill: innerCourse <= 90 ? '#000000' : '#dc2626', // Farbliche Trennung zur besseren Orientierung (Schwarz/Rot)
+                    fill: innerCourse <= 90 ? '#000000' : '#dc2626', // Farbliche Trennung (Schwarz/Rot)
                     align: 'center',
-                    fontStyle: 'bold'
+                    fontStyle: 'bold',
+                    lineHeight: 1.1 // Verringert den Zeilenabstand leicht, damit die Zahlen kompakter stehen
                 });
-
-                // Text um das eigene Zentrum versetzen, damit er perfekt über dem Strich zentriert
+                
+                // NEU: Exakte Zentrierung über Konvas echte Box-Abmessungen.
+                // Da der Text zweizeilig ist, liest courseLabel.height() die Gesamthöhe beider Zeilen aus.
                 courseLabel.offsetX(courseLabel.width() / 2);
                 courseLabel.offsetY(courseLabel.height() / 2);
                 
-                // Text parallel zum Winkel mitdrehen, genau wie beim echten Dreieck!
-                courseLabel.rotation(angleDeg - 90);
+                // Text parallel zum Winkel mitdrehen
+                courseLabel.rotation(90 - angleDeg);
 
                 group.add(courseLabel);
             }
@@ -151,7 +166,7 @@ function createTriangleGeometry(isNav) {
     // 4. Roter Präzisionspunkt exakt im Zentrum der Hypotenuse (Der absolute Nullpunkt/Anker)
     const centerDot = new Konva.Circle({
         x: 0,
-        y: TRIANGLE_HEIGHT,
+        y: triangleHeight,
         radius: 5,
         stroke: '#ef4444',
         strokeWidth: 1.5,
@@ -161,7 +176,7 @@ function createTriangleGeometry(isNav) {
 
     const centerPoint = new Konva.Circle({
         x: 0,
-        y: TRIANGLE_HEIGHT,
+        y: triangleHeight,
         radius: 0.5,
         fill: '#ef4444'
     });
@@ -177,7 +192,22 @@ function createTriangleGeometry(isNav) {
     };
 
     group.getSide = (sideName) => {
-        const side = TRIANGLE_SIDES[sideName];
+        const sides = {
+            hypotenuse: {
+                start: { x: -triangleSize / 2, y: triangleHeight },
+                end: { x: triangleSize / 2, y: triangleHeight },
+            },
+            legA: {
+                start: { x: -triangleSize / 2, y: triangleHeight },
+                end: { x: 0, y: 0 },
+            },
+            legB: {
+                start: { x: 0, y: 0 },
+                end: { x: triangleSize / 2, y: triangleHeight },
+            },
+        };
+        const side = sides[sideName];
+
         if (!side) return null;
 
         const dx = side.end.x - side.start.x;
@@ -205,7 +235,7 @@ function createTriangleGeometry(isNav) {
         let nextRotation = targetAngle - nextSide.angle;
 
         if (outwardPoint) {
-            const centroid = { x: 0, y: TRIANGLE_HEIGHT * 2 / 3 };
+            const centroid = { x: 0, y: triangleHeight * 2 / 3 };
             const toInterior = {
                 x: centroid.x - nextSide.midpoint.x,
                 y: centroid.y - nextSide.midpoint.y,
@@ -241,7 +271,7 @@ function createTriangleGeometry(isNav) {
     };
 
     // Setzt das Rotationszentrum der Konva-Gruppe auf den roten Ankerpunkt
-    group.offset({ x: 0, y: TRIANGLE_HEIGHT });
+    group.offset({ x: 0, y: triangleHeight });
     return group;
 }
 
