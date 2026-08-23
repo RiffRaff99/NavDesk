@@ -1,5 +1,5 @@
 const COMPASS_SIZE = 180;
-const COMPASS_HALF_ANGLE = 15;
+const COMPASS_HALF_ANGLE = 25;
 
 function createCompass() {
     const group = new Konva.Group({

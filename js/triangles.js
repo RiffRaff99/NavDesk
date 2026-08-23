@@ -8,7 +8,7 @@ function createTriangleGeometry(isNav) {
     // Ein echtes A4-Blatt ist im Hochformat 21cm breit, im Querformat 29.7cm lang.
     const realChartWidthCm = isPortrait ? 21.0 : 29.7;
     
-    const pxPerCm = (currentChartWidth / realChartWidthCm) * 0.55; //fix, scheint gut zu passen
+    const pxPerCm = (currentChartWidth / realChartWidthCm) * 0.62; //fix, scheint gut zu passen
 
     const TARGET_TRIANGLE_WIDTH_CM = 26; 
     
