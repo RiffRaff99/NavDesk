@@ -1,5 +1,5 @@
 const COMPASS_SIZE = 180;
-const COMPASS_HALF_ANGLE = 25;
+
 
 function createCompass() {
     const group = new Konva.Group({
@@ -54,7 +54,13 @@ function createCompass() {
         const span = Math.hypot(dx, dy);
         if (span <= 1) return;
 
-        const halfAngle = COMPASS_HALF_ANGLE * Math.PI / 180;
+        // Ensure the opening won't turn too large, but the compass 
+        // doesn't get too large. Essentially we offer compass'
+        // of different sizes.
+        let compass_half_angle = 45;
+        if ( (span / 2) <41) compass_half_angle = (span /2);
+        
+        const halfAngle = compass_half_angle * Math.PI / 180;
         const legLength = span / (2 * Math.sin(halfAngle));
         const halfSpan = span / 2;
         const legHeight = legLength * Math.cos(halfAngle);

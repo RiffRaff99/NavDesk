@@ -781,7 +781,9 @@ function initEventListeners() {
         }
 
         if (appState.mode === 'COMPASS_ACTIVE' && appState.compass && appState.compass._compass.hanging) {
-            const delta = event.deltaY > 0 ? -0.5 : 0.5;
+            const nativeEvent = event.evt || event;
+            const step = nativeEvent.shiftKey ? 1.0 : 0.05;
+            const delta = event.deltaY > 0 ? -step : step;
             appState.compass.rotation(appState.compass.rotation() + delta);
             appState.toolLayer.batchDraw();
             return;
