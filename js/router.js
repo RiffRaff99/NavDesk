@@ -374,8 +374,50 @@ function restoreOverlay(raw) {
     appState.toolLayer.batchDraw();
 }
 
+function rotateChartImage(degrees) {
+    if (!appState.chartImage) return;
+
+    const img = appState.chartImage;
+
+    // 1. Offset in die Bildmitte setzen (wichtig für die Drehung vor Ort)
+    img.offset({
+        x: img.width() / 2,
+        y: img.height() / 2
+    });
+
+    // 2. Da das Bild vorher bei (0,0) lag, müssen wir es um den halben Offset
+    // nach rechts/unten verschieben, damit es exakt am selben Fleck bleibt!
+    img.position({
+        x: img.width() / 2,
+        y: img.height() / 2
+    });
+
+    // 3. Rotation berechnen und anwenden
+    const currentRotation = img.rotation() || 0;
+    const newRotation = (currentRotation + degrees) % 360;
+    img.rotation(newRotation);
+
+    // 4. Das Bild rotiert nun perfekt um seine eigene Mitte bei (0,0) der Stage.
+    // Jetzt zentrieren wir die Stage (den Viewport) wieder genau auf diese Mitte.
+    // Das entspricht exakt deiner Logik aus dem Lade-Code!
+    appState.stage.position({
+        x: (window.innerWidth - img.width()) / 2,
+        y: (window.innerHeight - img.height()) / 2
+    });
+
+    // 5. Alles frisch zeichnen
+    appState.stage.batchDraw();
+}
+
+
+
+
 function initAppAPI(app) {
     return {
+        rotateMap: function () {
+            rotateChartImage(90);
+        },
+
         importImage: function (file) {
             if (file) loadChartFile(file);
         },

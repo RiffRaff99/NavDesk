@@ -77,12 +77,16 @@
             <span id="lbl-import">Karte laden</span>
         </label>
         <input type="file" id="btn-import" accept="image/*,application/pdf" style="display:none;">
+
+        <button class="tool-button" id="btn-rotate-map" onclick="app.rotateMap()">
+            <span id="lbl-rotate-map">Rotate Map</span>
+        </button>
         <button class="tool-button" id="btn-overlay-export" onclick="app.exportOverlay()">
             ⇩ <span id="lbl-overlay-export">Overlay exportieren</span>
         </button>
         <label class="tool-button" for="btn-overlay-import">
             ⇧ <span id="lbl-overlay-import">Overlay importieren</span>
-        </label> = true
+        </label> 
         <input type="file" id="btn-overlay-import" accept="application/json,.json" style="display:none;">
 
         <div class="divider-v"></div>
@@ -126,13 +130,13 @@
 
         <div class="divider-v"></div>
 
-        <!-- Status display -->
+        <!-- Status display 
         <div class="status-display ui-layer">
             <span style="font-weight:bold;color:#7f8fa0;">Ready — drag to position triangles, scroll to zoom</span>
         </div>
 
         <div class="divider-v"></div>
-
+-->
         <!-- Reset button -->
         <button id="btn-clear" class="btn-reset" onclick="app.reset()">
             ❌ <span id="lbl-clear">Reset</span>

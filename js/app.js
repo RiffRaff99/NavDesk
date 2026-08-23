@@ -171,7 +171,6 @@ function loadPdfAsImage(file) {
     }
 }
 
-
 function updateStatus(statusKey) {
     const text = typeof i18n !== 'undefined' && i18n.t ? i18n.t(statusKey) : statusKey;
 
@@ -289,5 +288,6 @@ document.addEventListener('DOMContentLoaded', () => {
         app.importOverlay = api.importOverlay || app.importOverlay;
         app.setMode = api.setMode || app.setMode;
         app.reset = api.reset || app.reset;
+        app.rotateMap = api.rotateMap || app.rotateMap;
     }
 });
