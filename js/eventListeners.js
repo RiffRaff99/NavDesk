@@ -498,10 +498,12 @@ function initEventListeners() {
                 return;
             }
 
-            if (state.hanging && hitTool === compass) {
+            if (state.hanging) {
                 state.hanging = false;
+                state.dragOffset = null; // Offset zurücksetzen
                 state.interactionState = 'placed';
                 appState.activeTool = null;
+                updateCompassCursor(pointer, false);
                 appState.mode = 'PAN_ZOOM';
                 updateStatus('status_ready');
                 return;
@@ -580,13 +582,25 @@ function initEventListeners() {
         }
 
         if (appState.mode === 'PAN_ZOOM' && appState.compass && hitTool === appState.compass) {
-            appState.compass._compass.hanging = true;
-            appState.compass._compass.interactionState = 'attached';
-            appState.activeTool = appState.compass;
+            const compass = appState.compass;
+            const state = compass._compass;
+            const chartPointer = toChartSpace(pointer); // Mausposition im Kartenraum
+            const currentCompassPos = compass.position(); // Aktuelle Position des Zirkels
+            
+            // Berechne den Abstand (Offset) zwischen Klickpunkt und Zirkel-Mittelpunkt
+            state.dragOffset = {
+                x: currentCompassPos.x - chartPointer.x,
+                y: currentCompassPos.y - chartPointer.y
+            };
+
+            state.hanging = true;
+            state.interactionState = 'attached';
+            appState.activeTool = compass;
             appState.mode = 'COMPASS_ACTIVE';
             updateCompassCursor(pointer, true);
             return;
         }
+
 
         if (hitTool) {
             draggingTool = true;
@@ -677,8 +691,13 @@ function initEventListeners() {
             const state = compass._compass;
             const chartPointer = toChartSpace(pointer);
             if (state.hanging) {
-                compass.position(chartPointer);
-                const edgeRotation = getCompassEdgeRotation(chartPointer, appState.chartImage);
+                const offset = state.dragOffset || { x: 0, y: 0 };
+                compass.position({
+                    x: chartPointer.x + offset.x,
+                    y: chartPointer.y + offset.y
+                });                 
+                // Für die Rotation nutzen wir die neue Zirkelposition
+                const edgeRotation = getCompassEdgeRotation(compass.position(), appState.chartImage);
                 if (edgeRotation !== null) {
                     compass.rotation(edgeRotation);
                 }
