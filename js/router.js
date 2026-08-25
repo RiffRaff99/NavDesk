@@ -235,7 +235,7 @@ function serializeTriangle(triangle) {
 }
 
 function serializeCompass(compass) {
-    if (!compass) return null;
+    if (!compass || !compass._compass) return null;
     return {
         ...serializeNode(compass),
         state: {

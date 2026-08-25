@@ -46,10 +46,14 @@ The central `appState` contains:
 - `drawings`: persistent line, arrow, circle, marker, and label collections
 - `drawingStart` and `drawingPreview`: temporary drawing state
 - `chartImage`: the current chart image
+- `chartFileName`: name of the currently loaded chart file (used for overlay compatibility hints)
+- `notes`: user exercise notes stored in the notepad panel (included in overlay export)
 
 The public application API is:
 
 - `app.importImage(file)`: import an image or PDF
+- `app.exportOverlay()`: export the current exercise state as a JSON overlay file
+- `app.importOverlay(raw)`: import a JSON overlay onto the current chart
 - `app.setMode(modeName)`: activate a tool or canonical mode
 - `app.reset()`: remove all tools and drawings and return to `PAN_ZOOM`
 
@@ -65,6 +69,7 @@ The public application API is:
 - `CIRCLE_ACTIVE`: center-radius circle drawing
 - `MARKER_ACTIVE`: center-radius marker drawing
 - `LABEL_ACTIVE`: one-click text-label placement
+- `ERASER_ACTIVE`: nearest-drawing erasure mode
 
 The router accepts short aliases such as `nav`, `align`, `compass`, `line`, `arrow`, `circle`, `marker`, `label`, `pan`, and `parallel`.
 
@@ -73,7 +78,7 @@ The router accepts short aliases such as `nav`, `align`, `compass`, `line`, `arr
 ### Geometry
 
 - The NT is an isosceles triangle with a 90-degree angle at the apex.
-- The nominal size is approximately 496 px, with a height of approximately 248 px.
+- The triangle size is calculated dynamically based on the loaded chart dimensions using `pxPerCm` scaling: `TARGET_TRIANGLE_WIDTH_CM * pxPerCm`, where `TARGET_TRIANGLE_WIDTH_CM = 26`. The height is half the width. At standard scales this produces approximately 496 px width and 248 px height as reference values.
 - The transparent body uses `rgba(255, 255, 255, 0.18)`.
 - The outline is black with 2 px strokes. The lower frame is split around the anchor marker so the black line does not pass through the marker.
 - Six horizontal parallel helper lines are drawn inside the NT at 22 px intervals.
@@ -165,6 +170,15 @@ The router accepts short aliases such as `nav`, `align`, `compass`, `line`, `arr
 - Constrained movement preserves the current rotation.
 - Pointer release ends only the current drag. The mode and tools remain available.
 - Right-click/context-menu exits `PARALLEL` and returns to `PAN_ZOOM`; the tools remain visible.
+
+### `ERASER_ACTIVE`
+
+- In eraser mode, clicking on a drawing object deletes it if it is within 2 screen pixels of the pointer.
+- The tolerance is converted from screen space to chart space using the current stage scale: `2 / Math.max(stage.scaleX(), 0.001)`.
+- Erasing affects lines, arrows, circles, markers, and labels.
+- NT, AT, and compass tools are protected; these can only be removed through the Reset button.
+- When multiple objects overlap, the nearest one to the pointer is deleted first.
+- Erasing does not change the active navigation mode or viewport transform.
 
 ### Double-Click Rules
 
