@@ -121,9 +121,7 @@ function getCompassEdgeRotation(chartPointer, chartImage) {
     const top = 0;
     const bottom = chartImage.height();
 
-    console.log(localPointer, left, right, top, bottom); 
-
-    // Toleranzbereich in Pixeln (im skalierten Bildraum)
+      // Toleranzbereich in Pixeln (im skalierten Bildraum)
     const SNAP_THRESHOLD = 50; 
 
     // Abstände im lokalen Raum des Bildes messen
