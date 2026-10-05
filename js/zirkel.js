@@ -107,25 +107,30 @@ function compassPointDistance(first, second) {
 }
 
 
-function getCompassEdgeRotation(pointer, chartImage) {
+function getCompassEdgeRotation(chartPointer, chartImage) {
     if (!chartImage) return null;
 
-    const imageWidth = typeof chartImage.width === 'function' ? chartImage.width() : chartImage.image().width;
-    const imageHeight = typeof chartImage.height === 'function' ? chartImage.height() : chartImage.image().height;
-    
-    const left = chartImage.x();
-    const top = chartImage.y();
-    const right = left + imageWidth;
-    const bottom = top + imageHeight;
+    // Nimm den Stage-Pointer und transformiere ihn in das lokale System des Bildes.
+    // Da chartImage ein Kind der Stage/des Layers ist, holt getTransform() 
+    // die Position, Rotation und das Offset des Bildes selbst ab.
+    const imageTransform = chartImage.getTransform().copy().invert();
+    const localPointer = imageTransform.point(chartPointer);
 
-    // Toleranzbereich in Pixeln, ab wann der Zirkel senkrecht/waagerecht einrastet
+    const left = 0;
+    const right = chartImage.width();
+    const top = 0;
+    const bottom = chartImage.height();
+
+    console.log(localPointer, left, right, top, bottom); 
+
+    // Toleranzbereich in Pixeln (im skalierten Bildraum)
     const SNAP_THRESHOLD = 50; 
 
-    // Wir berechnen den absoluten Abstand zu jedem Rand
-    const distLeft = Math.abs(pointer.x - left);
-    const distRight = Math.abs(pointer.x - right);
-    const distTop = Math.abs(pointer.y - top);
-    const distBottom = Math.abs(pointer.y - bottom);
+    // Abstände im lokalen Raum des Bildes messen
+    const distLeft = Math.abs(localPointer.x - left);
+    const distRight = Math.abs(localPointer.x - right);
+    const distTop = Math.abs(localPointer.y - top);
+    const distBottom = Math.abs(localPointer.y - bottom);
 
     // Finde den nächstgelegenen Rand
     const minDist = Math.min(distLeft, distRight, distTop, distBottom);
@@ -133,9 +138,15 @@ function getCompassEdgeRotation(pointer, chartImage) {
     // Wenn der Zeiger nicht nah genug an einem Rand ist, behalte freie Rotation
     if (minDist > SNAP_THRESHOLD) return null;
 
-    // Rückgabe der passenden Rotation für den nächsten Rand
-    if (minDist === distLeft) return 270;   // Linker Rand (Breitengrad/Seemeilen) -> Vertikal
-    if (minDist === distRight) return 90;    // Rechter Rand (Breitengrad/Seemeilen) -> Vertikal
-    if (minDist === distTop) return 0;       // Oberer Rand (Längengrad) -> Horizontal
-    return 180;                             // Unterer Rand (Längengrad) -> Horizontal
+    // Da der Kompass sich MIT dem Bild mitdrehen soll, 
+    // schlagen wir die Eigenrotation des Bildes auf den Basis-Winkel auf.
+    const imageRotation = chartImage.rotation() || 0;
+
+    if (minDist === distLeft) return (90 + imageRotation) % 360;   // Linker Rand
+    if (minDist === distRight) return (270 + imageRotation) % 360;    // Rechter Rand
+    
+    if (minDist === distTop) return (180 + imageRotation) % 360;       // Oberer Rand
+    if (minDist === distBottom) return (0 + imageRotation) % 360;      // Unterer Rand
+
+    return null; // Sollte nie erreicht werden, aber für die Sicherheit
 }
